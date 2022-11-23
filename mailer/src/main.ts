@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
 
@@ -14,7 +15,7 @@ async function bootstrap() {
       options: {
         urls: [`${configService.get('rb_url')}`],
         queue: `${configService.get('mailer_queue')}`,
-        queueOptions: { durable: false },
+        queueOptions: { durable: true },
         prefetchCount: 1,
       },
     },

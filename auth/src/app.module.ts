@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import * as path from 'path';
 
+import { ConfigService } from './config/config.services';
 import { AllExceptionsFilter } from './core/exception.interceptor';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -25,6 +27,23 @@ import { ClientAuthGuard } from './core/guards/auth.guard';
         AcceptLanguageResolver,
       ],
     }),
+    ClientsModule.registerAsync([
+      {
+        name: 'MAIL_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [`${configService.get('rb_url')}`],
+            queue: `${configService.get('mailer_queue')}`,
+            queueOptions: {
+              durable: false,
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
   ],
   controllers: [AppController],
   providers: [

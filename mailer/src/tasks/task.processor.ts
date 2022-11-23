@@ -1,14 +1,16 @@
 import { Process, Processor } from '@nestjs/bull';
-import { ConfigService } from '../config/config.service';
 import { join } from 'path';
 import { readFile } from 'fs';
 import { SES } from 'aws-sdk';
 import { Logger } from '@nestjs/common';
 import * as _ from 'lodash';
 
+import { ConfigService } from '../config/config.service';
+
 enum EmailTemplates {
   FORGOT_PASSWORD = 'forgot-password',
   POST_UPDATED = 'post-updated',
+  SIGNUP = 'signup',
 }
 
 @Processor('email-sender')
@@ -25,6 +27,8 @@ export class TaskProcessor {
   @Process()
   async senderHanlder(job) {
     try {
+      console.log('-----------');
+      console.log(job);
       // eslint-disable-next-line prefer-const
       let { template, payload } = job.data;
       template = EmailTemplates[template];

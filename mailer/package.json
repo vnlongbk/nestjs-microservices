@@ -23,6 +23,7 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/bull": "^0.4.2",
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
@@ -33,7 +34,7 @@
     "aws-sdk": "^2.1066.0",
     "dotenv": "^10.0.0",
     "lodash": "^4.17.21",
-    "nodemailer": "^6.6.3",
+    "nodemailer": "^6.8.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

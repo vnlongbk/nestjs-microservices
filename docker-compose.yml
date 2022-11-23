@@ -56,6 +56,22 @@ services:
     #     fluentd-address: host.docker.internal:24224
     #     tag: rabbitmq
 
+  cache:
+    hostname: redis
+    image: redis:latest
+    restart: on-failure
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     fluentd-async: "true"
+    #     fluentd-address: 192.168.29.38:24224
+    #     tag: cache
+
   kong:
     build:
       context: ./kong

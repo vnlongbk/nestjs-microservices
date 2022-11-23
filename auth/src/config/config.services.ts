@@ -7,7 +7,9 @@ export class ConfigService {
   private config: { [key: string]: any } = {};
   constructor() {
     this.config.servicePort = process.env.AUTH_PORT;
+
     this.config.auth_queue = process.env.RABBITMQ_AUTH_QUEUE;
+    this.config.mailer_queue = process.env.RABBITMQ_MAILER_QUEUE;
     this.config.rb_url = process.env.RABBITMQ_URL;
 
     this.config.accessExp = process.env.ACCESS_EXP;
