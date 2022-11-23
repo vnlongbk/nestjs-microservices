@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    restart: on-failure
+    container_name: rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    ports:
+      - '5672:5672'
+      - '15671:15672'
+    networks:
+      - backend
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     fluentd-address: host.docker.internal:24224
+    #     tag: rabbitmq
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  rabbit_data:
+    driver: local

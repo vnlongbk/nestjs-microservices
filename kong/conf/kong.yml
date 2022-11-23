@@ -1,0 +1,20 @@
+_format_version: "2.1"
+_transform: true
+
+services:
+  - name: auth-service
+    host: auth
+    port: 9001
+    protocol: http
+    routes:
+      - name: auth-route
+        paths:
+          - /auth
+  - name: post-service
+    host: post
+    port: 9002
+    protocol: http
+    routes:
+      - name: post-route
+        paths:
+          - /post
