@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ClientProxy } from '@nestjs/microservices';
@@ -28,6 +29,9 @@ export class ClientAuthGuard implements CanActivate {
         return true;
       }
       const Authorization = request.headers['authorization'];
+      if (!Authorization) {
+        throw new UnauthorizedException();
+      }
       const token = Authorization.replace('Bearer ', '');
       const decode = await firstValueFrom(
         this.client.send('token_decode', token),

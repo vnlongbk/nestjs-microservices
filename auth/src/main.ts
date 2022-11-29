@@ -37,7 +37,7 @@ async function bootstrap() {
     options: {
       urls: [`${configService.get('rb_url')}`],
       queue: `${configService.get('auth_queue')}`,
-      queueOptions: { durable: true },
+      queueOptions: { durable: false },
       prefetchCount: 1,
     },
   });

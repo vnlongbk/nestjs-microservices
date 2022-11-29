@@ -6,12 +6,12 @@ import {
   Inject,
 } from '@nestjs/common';
 import { User, Role } from '@prisma/client';
-import { hashSync } from 'bcrypt';
+import { hashSync, compareSync } from 'bcrypt';
 import { ClientProxy } from '@nestjs/microservices';
 
 import { TokenService } from './core/services/token.service';
 import { PrismaService } from './core/services/prisma.services';
-import { CreateUserDto } from './core/dtos';
+import { CreateUserDto, LoginDto } from './core/dtos';
 import { IMailPayload } from './core/interfaces';
 
 @Injectable()
@@ -26,6 +26,14 @@ export class AppService {
 
   public createHash(password: string): string {
     return hashSync(password, 10);
+  }
+
+  public compare(password: string, hash: string): boolean {
+    return compareSync(hash, password);
+  }
+
+  public getUserById(userId: number) {
+    return this.prisma.user.findUnique({ where: { id: userId } });
   }
 
   public async signup(data: CreateUserDto) {
@@ -67,6 +75,59 @@ export class AppService {
         user,
       };
     } catch (e) {
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async login(data: LoginDto) {
+    try {
+      const { email, password } = data;
+      const checkUser = await this.prisma.user.findUnique({ where: { email } });
+      if (!checkUser) {
+        throw new HttpException(
+          'user_not_found',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      if (this.compare(password, checkUser.password)) {
+        throw new HttpException('invalid_password', HttpStatus.CONFLICT);
+      }
+      const createTokenResponse = await this.tokenService.createToken(
+        checkUser.id,
+      );
+      delete checkUser.password;
+      return {
+        ...createTokenResponse,
+        user: checkUser,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  public async getAccessToken(data: { username: string; password: string }) {
+    try {
+      const { username, password } = data;
+      const checkUser = await this.prisma.user.findUnique({
+        where: { email: username },
+      });
+      if (!checkUser) {
+        throw new HttpException(
+          'user_not_found',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      if (this.compare(password, checkUser.password)) {
+        throw new HttpException('invalid_password', HttpStatus.CONFLICT);
+      }
+      const createTokenResponse = await this.tokenService.createToken(
+        checkUser.id,
+      );
+      delete checkUser.password;
+      return createTokenResponse.accessToken;
+    } catch (e) {
+      console.log(e);
       throw new InternalServerErrorException(e);
     }
   }

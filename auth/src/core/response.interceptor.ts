@@ -30,6 +30,9 @@ export class ResponseInterceptor implements NestInterceptor {
     const status =
       this.reflector.get<number>('__httpCode__', context.getHandler()) ||
       (request.method === 'POST' ? 201 : 200);
+    if (request.url === '/getAccessToken') {
+      return of({ access_token: body });
+    }
     return of({
       statusCode: status,
       message: statusMessages[status],
