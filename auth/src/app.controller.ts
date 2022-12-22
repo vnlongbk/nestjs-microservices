@@ -36,6 +36,17 @@ export class AppController {
   }
 
   @AllowUnauthorizedRequest()
+  @Get('/retriveAuthors')
+  retriveAuthors(): Promise<any> {
+    return this.appService.retriveAuthors();
+  }
+
+  @Post('/createAuthor')
+  createAuthor(@Body() data): Promise<any> {
+    return this.appService.createAuthor(data);
+  }
+
+  @AllowUnauthorizedRequest()
   @Get('/health')
   public healthCheck(@Res() res: Response) {
     this.prisma

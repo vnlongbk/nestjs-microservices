@@ -2,7 +2,10 @@
 CREATE TYPE "TokenStatus" AS ENUM ('ISSUED', 'EXPIRED');
 
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "Role" AS ENUM ('USER', 'ADMIN', 'FREELANCER');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('PUBLISHED', 'UNPUBLISHED', 'DELETED');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -12,8 +15,10 @@ CREATE TABLE "User" (
     "lastName" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "role" "Role" NOT NULL DEFAULT 'USER',
+    "status" "Status" NOT NULL DEFAULT 'UNPUBLISHED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "bio" TEXT,
     "profilePicture" TEXT,
     "phone" TEXT,
     "deviceToken" TEXT,

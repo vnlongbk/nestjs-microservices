@@ -1,27 +1,27 @@
 version: "3"
 
 services:
-  auth:
-    build:
-      context: ./auth
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    hostname: auth
-    ports:
-      - "9001:9001"
-    env_file:
-      - ./auth/.env
-    networks:
-      - backend
-    depends_on:
-      - postgres
-      - rabbitmq
-    links:
-      - rabbitmq
-      - postgres
-    volumes:
-      - ./auth:/var/www/auth
-      - /var/www/auth/node_modules
+  # auth:
+  #   build:
+  #     context: ./auth
+  #     dockerfile: Dockerfile
+  #   restart: unless-stopped
+  #   hostname: auth
+  #   ports:
+  #     - "9001:9001"
+  #   env_file:
+  #     - ./auth/.env
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - postgres
+  #     - rabbitmq
+  #   links:
+  #     - rabbitmq
+  #     - postgres
+  #   volumes:
+  #     - ./auth:/var/www/auth
+  #     - /var/www/auth/node_modules
   # logging:
   #   driver: fluentd
   #   options:

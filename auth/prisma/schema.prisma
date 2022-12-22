@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -18,8 +18,10 @@ model User {
   lastName       String
   password       String
   role           Role     @default(USER)
+  status         Status   @default(UNPUBLISHED)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  bio            String?
   profilePicture String?
   phone          String?
   deviceToken    String?  @unique
@@ -45,4 +47,11 @@ enum TokenStatus {
 enum Role {
   USER
   ADMIN
+  FREELANCER
+}
+
+enum Status {
+  PUBLISHED
+  UNPUBLISHED
+  DELETED
 }

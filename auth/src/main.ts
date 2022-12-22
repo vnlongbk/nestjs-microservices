@@ -24,7 +24,11 @@ async function bootstrap() {
   const logger = new Logger();
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
-  app.enableCors({ origin: '*' });
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
 
   const moduleRef = app.select(AppModule);
   const reflector = moduleRef.get(Reflector);

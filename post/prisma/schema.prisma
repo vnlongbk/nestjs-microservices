@@ -3,7 +3,7 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl"]
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -12,13 +12,36 @@ datasource db {
 }
 
 model Post {
-  id        Int       @id @default(autoincrement())
-  title     String
-  content   String
-  author    Int
-  image     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  isDeleted Boolean?
+  id         Int       @id @default(autoincrement())
+  title      String?
+  content    String?
+  author     Int?
+  image      String?
+  slug       String?
+  excerpt    String?
+  status     Status    @default(UNPUBLISHED)
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+}
+
+model Category {
+  id          Int       @id @default(autoincrement())
+  title       String?
+  slug        String?
+  color       String?
+  description String?
+  status      Status    @default(UNPUBLISHED)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  Post        Post[]
+}
+
+enum Status {
+  PUBLISHED
+  UNPUBLISHED
+  DELETED
 }

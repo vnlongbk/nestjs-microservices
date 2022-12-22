@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   Inject,
 } from '@nestjs/common';
-import { User, Role } from '@prisma/client';
+import { User, Role, Status } from '@prisma/client';
 import { hashSync, compareSync } from 'bcrypt';
 import { ClientProxy } from '@nestjs/microservices';
 
@@ -36,6 +36,38 @@ export class AppService {
     return this.prisma.user.findUnique({ where: { id: userId } });
   }
 
+  public async retriveAuthors() {
+    const authors = await this.prisma.user.findMany({});
+    return { authors };
+  }
+
+  public async createAuthor(data: any) {
+    try {
+      const { email, firstname, lastname, role, avatar, bio } = data;
+      const checkUser = await this.prisma.user.findUnique({ where: { email } });
+      if (checkUser) {
+        throw new HttpException('user_exists', HttpStatus.CONFLICT);
+      }
+
+      const newUser = {} as User;
+      newUser.email = data.email;
+      newUser.firstName = firstname.trim();
+      newUser.lastName = lastname.trim();
+      newUser.role = role;
+      newUser.profilePicture = avatar;
+      newUser.bio = bio;
+
+      const user = await this.prisma.user.create({ data: newUser });
+
+      return {
+        user,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException(e);
+    }
+  }
+
   public async signup(data: CreateUserDto) {
     try {
       const { email, password, firstname, lastname } = data;
@@ -50,25 +82,26 @@ export class AppService {
       newUser.password = hashPassword;
       newUser.firstName = firstname.trim();
       newUser.lastName = lastname.trim();
-      newUser.role = Role.USER;
+      newUser.role = Role.ADMIN;
+      newUser.status = Status.PUBLISHED;
 
       const user = await this.prisma.user.create({ data: newUser });
       const createTokenResponse = await this.tokenService.createToken(user);
       delete user.password;
 
-      const payload: IMailPayload = {
-        template: 'SIGNUP',
-        payload: {
-          email: user.email,
-          data: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-          },
-          subject: 'Signup Successfully',
-        },
-      };
+      // const payload: IMailPayload = {
+      //   template: 'SIGNUP',
+      //   payload: {
+      //     email: user.email,
+      //     data: {
+      //       firstName: user.firstName,
+      //       lastName: user.lastName,
+      //     },
+      //     subject: 'Signup Successfully',
+      //   },
+      // };
 
-      this.mailClient.emit('send_email', payload);
+      // this.mailClient.emit('send_email', payload);
 
       return {
         ...createTokenResponse,

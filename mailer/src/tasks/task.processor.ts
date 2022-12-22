@@ -27,8 +27,6 @@ export class TaskProcessor {
   @Process()
   async senderHanlder(job) {
     try {
-      console.log('-----------');
-      console.log(job);
       // eslint-disable-next-line prefer-const
       let { template, payload } = job.data;
       template = EmailTemplates[template];
