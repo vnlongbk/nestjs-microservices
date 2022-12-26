@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Res,
+  HttpStatus,
+  Patch,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { JwtPayload } from 'jsonwebtoken';
@@ -35,15 +43,14 @@ export class AppController {
     return this.appService.getUserById(data.userId);
   }
 
-  @AllowUnauthorizedRequest()
   @Get('/retriveAuthors')
   retriveAuthors(): Promise<any> {
     return this.appService.retriveAuthors();
   }
 
-  @Post('/createAuthor')
-  createAuthor(@Body() data): Promise<any> {
-    return this.appService.createAuthor(data);
+  @Post('/updateOrCreateAuthor')
+  createAuthor(@Body() data: CreateUserDto): Promise<any> {
+    return this.appService.updateOrCreateAuthor(data);
   }
 
   @AllowUnauthorizedRequest()

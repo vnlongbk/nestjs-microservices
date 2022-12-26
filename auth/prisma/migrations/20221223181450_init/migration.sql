@@ -10,10 +10,10 @@ CREATE TYPE "Status" AS ENUM ('PUBLISHED', 'UNPUBLISHED', 'DELETED');
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "firstName" TEXT NOT NULL,
-    "lastName" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
+    "email" TEXT,
+    "firstName" TEXT,
+    "lastName" TEXT,
+    "password" TEXT,
     "role" "Role" NOT NULL DEFAULT 'USER',
     "status" "Status" NOT NULL DEFAULT 'UNPUBLISHED',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -38,6 +38,9 @@ CREATE TABLE "Token" (
 
     CONSTRAINT "Token_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_id_key" ON "User"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");

@@ -37,27 +37,31 @@ export class AppService {
   }
 
   public async retriveAuthors() {
-    const authors = await this.prisma.user.findMany({});
+    const authors = await this.prisma.user.findMany({
+      orderBy: [
+        {
+          updatedAt: 'desc',
+        },
+      ],
+    });
     return { authors };
   }
 
-  public async createAuthor(data: any) {
+  public async updateOrCreateAuthor(data: any) {
+    console.log(data, '-----');
     try {
-      const { email, firstname, lastname, role, avatar, bio } = data;
-      const checkUser = await this.prisma.user.findUnique({ where: { email } });
-      if (checkUser) {
-        throw new HttpException('user_exists', HttpStatus.CONFLICT);
-      }
-
-      const newUser = {} as User;
-      newUser.email = data.email;
-      newUser.firstName = firstname.trim();
-      newUser.lastName = lastname.trim();
-      newUser.role = role;
-      newUser.profilePicture = avatar;
-      newUser.bio = bio;
-
-      const user = await this.prisma.user.create({ data: newUser });
+      // const { email, firstname, lastname, role, avatar, bio } = data;
+      const user = await this.prisma.user.upsert({
+        where: {
+          id: data?.id ?? 0,
+        },
+        update: {
+          ...data,
+        },
+        create: {
+          ...data,
+        },
+      });
 
       return {
         user,
@@ -70,7 +74,7 @@ export class AppService {
 
   public async signup(data: CreateUserDto) {
     try {
-      const { email, password, firstname, lastname } = data;
+      const { email, password, firstName, lastName } = data;
       const checkUser = await this.prisma.user.findUnique({ where: { email } });
       if (checkUser) {
         throw new HttpException('user_exists', HttpStatus.CONFLICT);
@@ -80,8 +84,8 @@ export class AppService {
       const newUser = {} as User;
       newUser.email = data.email;
       newUser.password = hashPassword;
-      newUser.firstName = firstname.trim();
-      newUser.lastName = lastname.trim();
+      newUser.firstName = firstName?.trim();
+      newUser.lastName = lastName?.trim();
       newUser.role = Role.ADMIN;
       newUser.status = Status.PUBLISHED;
 
