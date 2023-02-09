@@ -33,12 +33,15 @@ export class ClientAuthGuard implements CanActivate {
         throw new UnauthorizedException();
       }
       const token = Authorization.replace('Bearer ', '');
+      console.log(token, '---- token ----');
+
       const decode = await firstValueFrom(
         this.client.send('token_decode', token),
       );
       if (!decode) {
         return false;
       }
+      console.log(decode, '---- decode ----');
       request.userId = decode.userId;
       return true;
     } catch (e) {

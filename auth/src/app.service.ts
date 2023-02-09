@@ -36,7 +36,7 @@ export class AppService {
     return this.prisma.user.findUnique({ where: { id: userId } });
   }
 
-  public async retriveAuthors() {
+  public async getAuthors() {
     const authors = await this.prisma.user.findMany({
       orderBy: [
         {
@@ -48,9 +48,7 @@ export class AppService {
   }
 
   public async updateOrCreateAuthor(data: any) {
-    console.log(data, '-----');
     try {
-      // const { email, firstname, lastname, role, avatar, bio } = data;
       const user = await this.prisma.user.upsert({
         where: {
           id: data?.id ?? 0,

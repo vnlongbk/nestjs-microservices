@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.service';
 import { ResponseInterceptor } from './core/response.interceptor';
+import * as morgan from 'morgan';
 
 const docsEndpoint = '/docs';
 const title = process.env.POST_HOST;
@@ -43,6 +44,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
+  app.use(morgan('tiny'));
   await app.listen(configService.get('servicePort'));
   logger.log(
     `🚀 Post service running on port ${configService.get('servicePort')}`,

@@ -6,6 +6,7 @@ import { Transport } from '@nestjs/microservices';
 import { ResponseInterceptor } from './core/response.interceptor';
 import { AppModule } from './app.module';
 import { ConfigService } from './config/config.services';
+import * as morgan from 'morgan';
 
 const docsEndpoint = '/docs';
 const title = process.env.AUTH_HOST;
@@ -47,6 +48,7 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
+  app.use(morgan('tiny'));
   await app.listen(configService.get('servicePort'));
   logger.log(
     `🚀 Auth service running on port ${configService.get('servicePort')}`,

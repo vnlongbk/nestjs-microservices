@@ -26,6 +26,7 @@ export class TokenService {
   }
 
   public decodeToken(token: string): any {
+    console.log(token, '---token');
     return decode(token);
   }
 }

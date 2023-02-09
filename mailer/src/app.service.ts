@@ -12,7 +12,6 @@ export class AppService {
   // }
 
   async sendUserConfirmation(user) {
-    console.log(user, '------ user ====');
     const url = `example.com/auth/confirm?token=token`;
 
     await this.mailerService.sendMail({

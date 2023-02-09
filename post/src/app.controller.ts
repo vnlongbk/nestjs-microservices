@@ -50,4 +50,14 @@ export class AppController {
   updatePosts(@Param() id: number, @Body() data: UpdatePostDto) {
     return this.appService.updatePost(id, data);
   }
+
+  @Get('/category')
+  getCategories(): Promise<any> {
+    return this.appService.getCategories();
+  }
+
+  @Post('/category/updateOrCreate')
+  createCategory(@Body() data) {
+    return this.appService.updateOrCreateCategory(data);
+  }
 }

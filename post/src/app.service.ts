@@ -1,4 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Post } from '@prisma/client';
 import { firstValueFrom } from 'rxjs';
@@ -10,11 +14,11 @@ import { PrismaService } from './core/services/prisma.service';
 export class AppService {
   constructor(
     @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy,
-    @Inject('MAIL_SERVICE') private readonly mailClient: ClientProxy,
+    // @Inject('MAIL_SERVICE') private readonly mailClient: ClientProxy,
     private prisma: PrismaService,
   ) {
     this.authClient.connect();
-    this.mailClient.connect();
+    // this.mailClient.connect();
   }
 
   public async createNewPost(
@@ -85,18 +89,52 @@ export class AppService {
       }),
     );
     updatedPost.author = createdBy;
-    const payload: IMailPayload = {
-      template: 'POST_UPDATED',
-      payload: {
-        emails: [createdBy.email],
-        data: {
-          firstName: createdBy.firstName,
-          lastName: createdBy.lastName,
-        },
-        subject: 'Post Updated',
-      },
-    };
-    this.mailClient.emit('send_email', payload);
+    // const payload: IMailPayload = {
+    //   template: 'POST_UPDATED',
+    //   payload: {
+    //     emails: [createdBy.email],
+    //     data: {
+    //       firstName: createdBy.firstName,
+    //       lastName: createdBy.lastName,
+    //     },
+    //     subject: 'Post Updated',
+    //   },
+    // };
+    // this.mailClient.emit('send_email', payload);
     return updatedPost;
+  }
+
+  public async getCategories() {
+    const categories = await this.prisma.category.findMany({
+      orderBy: [
+        {
+          updatedAt: 'desc',
+        },
+      ],
+    });
+    return { categories };
+  }
+
+  public async updateOrCreateCategory(data: any) {
+    try {
+      const category = await this.prisma.category.upsert({
+        where: {
+          id: data?.id ?? 0,
+        },
+        update: {
+          ...data,
+        },
+        create: {
+          ...data,
+        },
+      });
+
+      return {
+        category,
+      };
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException(e);
+    }
   }
 }

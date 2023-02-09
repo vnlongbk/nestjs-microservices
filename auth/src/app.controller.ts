@@ -43,9 +43,9 @@ export class AppController {
     return this.appService.getUserById(data.userId);
   }
 
-  @Get('/retriveAuthors')
+  @Get('/getAuthors')
   retriveAuthors(): Promise<any> {
-    return this.appService.retriveAuthors();
+    return this.appService.getAuthors();
   }
 
   @Post('/updateOrCreateAuthor')
