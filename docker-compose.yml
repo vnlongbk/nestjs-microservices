@@ -1,33 +1,61 @@
 version: "3"
 
 services:
-  # auth:
-  #   build:
-  #     context: ./auth
-  #     dockerfile: Dockerfile
-  #   restart: unless-stopped
-  #   hostname: auth
-  #   ports:
-  #     - "9001:9001"
-  #   env_file:
-  #     - ./auth/.env
-  #   networks:
-  #     - backend
-  #   depends_on:
-  #     - postgres
-  #     - rabbitmq
-  #   links:
-  #     - rabbitmq
-  #     - postgres
-  #   volumes:
-  #     - ./auth:/var/www/auth
-  #     - /var/www/auth/node_modules
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    hostname: auth
+    ports:
+      - "9001:9001"
+    env_file:
+      - ./auth/.env
+    networks:
+      - backend
+    depends_on:
+      - postgres
+      - rabbitmq
+    links:
+      - rabbitmq
+      - postgres
+    volumes:
+      - ./auth:/var/www/auth
+      - /var/www/auth/node_modules
   # logging:
   #   driver: fluentd
   #   options:
   #     fluentd-async: "true"
   #     fluentd-address: 192.168.29.38:24224
   #     tag: auth-service
+
+  post:
+    build:
+      context: ./post
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    hostname: post
+    ports:
+      - "9002:9002"
+    env_file:
+      - ./post/.env
+    networks:
+      - backend
+    depends_on:
+      - postgres
+      - rabbitmq
+    links:
+      - rabbitmq
+      - postgres
+    volumes:
+      - ./post:/var/www/post
+      - /var/www/post/node_modules
+  # logging:
+  #   driver: fluentd
+  #   options:
+  #     fluentd-async: "true"
+  #     fluentd-address: 192.168.29.38:24224
+  #     tag: post-service
 
   postgres:
     container_name: postgres_microservices
@@ -62,12 +90,12 @@ services:
       - "15672:15672"
     networks:
       - backend
-    # logging:
-    #   driver: fluentd
-    #   options:
-    #     fluentd-async: "true"
-    #     fluentd-address: 192.168.29.38:24224
-    #     tag: rabbitmq
+  # logging:
+  #   driver: fluentd
+  #   options:
+  #     fluentd-async: "true"
+  #     fluentd-address: 192.168.29.38:24224
+  #     tag: rabbitmq
 
   cache:
     hostname: redis
@@ -96,10 +124,14 @@ services:
       - ./kong/conf/kong.yml:/usr/local/kong/declarative/kong.yml
     environment:
       KONG_DATABASE: "off"
+
       KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
       KONG_PROXY_LISTEN: 0.0.0.0:8000
       KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_ADMIN_GUI_PATH: /manager
+      KONG_GUI_URL: 0.0.0.0:8002
+
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
@@ -107,6 +139,7 @@ services:
     ports:
       - "8000:8000"
       - "8001:8001"
+      - "8002:8002"
     networks:
       - backend
     # logging:

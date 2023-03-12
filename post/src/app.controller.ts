@@ -36,14 +36,14 @@ export class AppController {
       });
   }
 
-  @Post('/create')
-  createPost(@Body() data: CreatePostDto, @CurrentUser() authUserId: number) {
-    return this.appService.createNewPost(data, authUserId);
-  }
-
   @Get('/')
   getPosts(@Query() data: GetPostsDto) {
     return this.appService.getAllPosts(data);
+  }
+
+  @Post('/create')
+  createPost(@Body() data: CreatePostDto, @CurrentUser() authUserId: number) {
+    return this.appService.createNewPost(data, authUserId);
   }
 
   @Put('/update/:id')

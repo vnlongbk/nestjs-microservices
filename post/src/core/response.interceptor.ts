@@ -33,7 +33,7 @@ export class ResponseInterceptor implements NestInterceptor {
     return of({
       statusCode: status,
       message: statusMessages[status],
-      data: body,
+      body,
     });
   }
 }
